@@ -1,4 +1,6 @@
-package hw03;
+package src;
+
+import java.util.NoSuchElementException;
 
 /**
  * An implementation of the CS132List interface backed with an array of Objects.
@@ -144,4 +146,50 @@ public class CS232ArrayList<E> implements CS232List<E>, CS232Iterable<E> {
             return elem;
         }
     }
+
+    @Override
+    public CS232Iterator<E> getIterator() {
+        return new CS232Iterator<E>() {
+            private int index = -1; // Start before the first element
+
+            @Override
+            public boolean hasNext() {
+                return index + 1 < currentSize; // Check if there's a next element
+            }
+
+            @Override
+            public E next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("No next element");
+                }
+                index++;
+                return listElements[index];
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return index > 0; // Check if there's a previous element
+            }
+
+            @Override
+            public E previous() {
+                if (!hasPrevious()) {
+                    throw new NoSuchElementException("No previous element");
+                }
+                index--;
+                return listElements[index];
+            }
+        };
+    }
+            
+        
+        
 }
+
+    
+
+
+
+
+
+

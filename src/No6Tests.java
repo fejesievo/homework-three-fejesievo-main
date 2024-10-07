@@ -1,10 +1,10 @@
-package hw03;
+package src;
 
 import static org.junit.Assert.*;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.Before;
+import  org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;

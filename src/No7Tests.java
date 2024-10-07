@@ -1,6 +1,6 @@
-package hw03;
+package src;
 
-import static org.junit.Assert.*;
+import  org.junit.Assert.*;
 
 import java.util.NoSuchElementException;
 
@@ -56,6 +56,7 @@ public class No7Tests {
 	@Test
 	public void testNextPreviousSequence() {
 		buildList();
+		it.next();
 		it.next();
 		it.next();
 		assertEquals("Incorect value", "two", it.previous());

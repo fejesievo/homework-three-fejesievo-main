@@ -1,4 +1,4 @@
-package hw03;
+package src;
 
 /**
  * Interface specifying a Queue ADT

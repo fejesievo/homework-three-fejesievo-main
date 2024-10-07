@@ -1,4 +1,4 @@
-package hw03;
+package src;
 
 import java.util.NoSuchElementException;
 
@@ -9,255 +9,168 @@ import java.util.NoSuchElementException;
  * @author Dickinson College
  * @version Feb 18, 2016
  */
-public class CS232IterableDoublyLinkedList<E> implements CS232List<E>,
-		CS232Iterable<E> {
+public class CS232IterableDoublyLinkedList<E> implements CS232List<E>, CS232Iterable<E> {
 
-	private DLLNode head;
-	private DLLNode tail;
-	private int size;
+    private DLLNode head;
+    private DLLNode tail;
+    private int size;
 
-	/**
-	 * Construct a new empty CS232DoublyLinkedList.
-	 */
-	public CS232IterableDoublyLinkedList() {
-		/*
-		 * This implementation uses dummy head and tail nodes to simplify the
-		 * implementation of insert/remove/add operations at the start or end of
-		 * the list.
-		 */
-		head = new DLLNode(null, null, null);
-		tail = new DLLNode(null, head, null);
-		head.next = tail;
-		size = 0;
-	}
+    /**
+     * Construct a new empty CS232DoublyLinkedList.
+     */
+    public CS232IterableDoublyLinkedList() {
+        // Dummy head and tail nodes to simplify insert/remove/add operations
+        head = new DLLNode(null, null, null);
+        tail = new DLLNode(null, head, null);
+        head.next = tail;
+        size = 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public int size() {
-		return size;
-	}
+    // Other methods...
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void add(E element) {
-		DLLNode pred = tail.prev;
-		DLLNode node = new DLLNode(element, pred, tail);
-		pred.next = node;
-		tail.prev = node;
+    public int size() {
+        return size;
+    }
 
-		size++;
-	}
+    public void add(E element) {
+        DLLNode pred = tail.prev;
+        DLLNode node = new DLLNode(element, pred, tail);
+        pred.next = node;
+        tail.prev = node;
+        size++;
+    }
 
-	/*
-	 * Helper method to get the DLLNode at the specified index.
-	 * 
-	 * Throws exception if the index is not valid.
-	 */
-	private DLLNode getNode(int index) {
-		checkBounds(index);
-		DLLNode cur = head.next;
-		for (int i = 0; i < index; i++) {
-			cur = cur.next;
-		}
-		return cur;
-	}
+    private DLLNode getNode(int index) {
+        checkBounds(index);
+        DLLNode cur = head.next;
+        for (int i = 0; i < index; i++) {
+            cur = cur.next;
+        }
+        return cur;
+    }
 
-	/*
-	 * Helper method that throws an exception if the index is not valid.
-	 */
-	private void checkBounds(int index) {
-		if (index < 0 || index >= size) {
-			throw new IndexOutOfBoundsException("Invalid index: " + index
-					+ " on List of size " + size + ".");
-		}
-	}
+    private void checkBounds(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Invalid index: " + index + " on List of size " + size + ".");
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public E get(int index) throws IndexOutOfBoundsException {
-		DLLNode node = getNode(index);
-		if (node != null) {
-			return node.element;
-		} else {
-			return null;
-		}
-	}
+    public E get(int index) throws IndexOutOfBoundsException {
+        return getNode(index).element;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void set(int index, E element) throws IndexOutOfBoundsException {
-		DLLNode node = getNode(index);
-		node.element = element;
-	}
+    public void set(int index, E element) throws IndexOutOfBoundsException {
+        getNode(index).element = element;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void insert(int index, E element) throws IndexOutOfBoundsException {
-		/*
-		 * If the list is empty then tail will succeed (appear immediately
-		 * after) the new node. Otherwise, the node at index succeeds the new
-		 * node.
-		 */
-		DLLNode succ = tail;
-		if (index != size) {
-			succ = getNode(index);
-		}
+    public void insert(int index, E element) throws IndexOutOfBoundsException {
+        // Allow inserting at the end
+        DLLNode succ = (index == size) ? tail : getNode(index);
+        DLLNode node = new DLLNode(element, succ.prev, succ);
+        succ.prev.next = node;
+        succ.prev = node;
+        size++;
+    }
 
-		// Whatever succ points to now comes after new node.
-		DLLNode node = new DLLNode(element, succ.prev, succ);
-		succ.prev.next = node;
-		succ.prev = node;
+    public E remove(int index) throws IndexOutOfBoundsException {
+        DLLNode node = getNode(index);
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+        size--;
+        return node.element;
+    }
 
-		size++;
-	}
+    private class DLLNode {
+        public E element;
+        public DLLNode prev;
+        public DLLNode next;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public E remove(int index) throws IndexOutOfBoundsException {
-		// Intentionally not implemented... see HW assignment!
-		return null;
-	}
+        public DLLNode(E element, DLLNode prev, DLLNode next) {
+            this.element = element;
+            this.prev = prev;
+            this.next = next;
+        }
+    }
 
-	/*
-	 * Defines the node object for the doubly linked list. Note: Fields are
-	 * public so that they can be accessed directly rather than via accessors
-	 * and mutators. This make the implementations of the doubly linked list
-	 * methods above easier to implement and read. And because the DLLNode class
-	 * is private to this class it is not an egregious violation of
-	 * encapsulation.
-	 */
-	private class DLLNode {
-		public E element;
-		public DLLNode prev;
-		public DLLNode next;
+    public CS232Iterator<E> getIterator() {
+        return new DLLIterator();
+    }
 
-		public DLLNode(E element, DLLNode prev, DLLNode next) {
-			this.element = element;
-			this.prev = prev;
-			this.next = next;
-		}
-	}
+    private class DLLIterator implements CS232Iterator<E> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public CS232Iterator<E> getIterator() {
-		return new DLLIterator();
-	}
+        private DLLNode cursor;
 
-	/*
-	 * Iterator implementation for the doubly linked list.
-	 */
-	private class DLLIterator implements CS232Iterator<E> {
+        public DLLIterator() {
+            cursor = head; // Start at the dummy head
+        }
 
-		private DLLNode cursor;
+        public boolean hasNext() {
+            return cursor.next != tail; // Check if next node is not tail
+        }
 
-		public DLLIterator() {
-			cursor = head;
-		}
+        public E next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("There is no next element.");
+            }
+            cursor = cursor.next; // Move cursor to next node
+            return cursor.element; // Return the element at the new cursor position
+        }
 
-		public boolean hasNext() {
-			return cursor.next != tail;
-		}
+        public boolean hasPrevious() {
+            return cursor.prev != head; // Check if cursor is not at the first actual element
+        }
 
-		public E next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException("There is no next element.");
-			} else {
-				cursor = cursor.next;
-				return cursor.element;
-			}
-		}
+        public E previous() {
+            if (!hasPrevious()) {
+                throw new NoSuchElementException("There is no previous element.");
+            }
+            cursor = cursor.prev; // Move cursor back
+            return cursor.element; // Return the previous element
+        }
 
-		public boolean hasPrevious() {
-			return cursor.prev != head;
-		}
+        public void insert(E element) {
+            DLLNode node;
+            if (cursor == head) {
+                // Inserting at the start of the list
+                node = new DLLNode(element, head, head.next);
+                head.next.prev = node;
+                head.next = node;
+            } else {
+                // Inserting after the current cursor position
+                node = new DLLNode(element, cursor, cursor.next);
+                cursor.next.prev = node;
+                cursor.next = node;
+            }
+            cursor = node; // Move cursor to the new node
+            size++;
+        }
 
-		public E previous() {
-			if (!hasPrevious()) {
-				throw new NoSuchElementException("THere is no previous element.");
-			} else {
-				cursor = cursor.prev;
-				return cursor.element;
-			}
-		}
+        public E remove() {
+            if (cursor == head || cursor == tail) {
+                throw new NoSuchElementException("Cannot remove from this position.");
+            }
+            E element = cursor.element; // Store the element to return
+            // Re-link previous and next nodes
+            cursor.prev.next = cursor.next;
+            cursor.next.prev = cursor.prev;
+            cursor = cursor.next; // Move cursor forward after removal
+            size--;
+            return element; // Return the removed element
+        }
+    }
 
-		public void insert(E element) {
-			DLLNode node = new DLLNode(element, cursor, cursor.next);
-			cursor.next.prev = node;
-			cursor.next = node;
-			cursor = node;
-			size++;
-		}
-
-		public E remove() {
-
-			if (cursor == null) {
-				throw new NoSuchElementException("Cursor is null. There is no element at this node")
-			}
-			if (head == tail){
-				throw new NoSuchElementException("There is no element to remove");
-			}
-			E holder = cursor.element;
-
-
-			if (!hasNext()) {
-				tail = cursor.prev;
-			} else {
-				cursor.next.prev = cursor.prev;
-			}
-
-
-			if (!hasPrevious()){
-				head = cursor.next;
-			} else {
-				cursor.prev.next = cursor.next;
-			}
-			
-
-			cursor.next = null;
-			cursor.prev = null;
-
-			cursor = cursor.next;
-			
-			size--;
-
-		
-			return holder;
-
-		}
-	}
-	
-	/**
-	 * Helper method for testing that checks that all of the links are
-	 * symmetric.
-	 * 
-	 * @return true if all of the links are correct.
-	 */
-	public boolean checkListIntegrity() {
-		if (size == 0) {
-			return head.next == tail && tail.prev == head;
-		} else {
-			DLLNode cur = head.next;
-
-			while (cur.next != tail) {
-
-				DLLNode prev = cur.prev;
-				DLLNode next = cur.next;
-
-				if (prev.next != cur || next.prev != cur) {
-					return false;
-				}
-
-				cur = cur.next;
-			}
-		}
-		return true;
-	}
+    public boolean checkListIntegrity() {
+        if (size == 0) {
+            return head.next == tail && tail.prev == head;
+        } else {
+            DLLNode cur = head.next;
+            while (cur != tail) {
+                if (cur.prev.next != cur || cur.next.prev != cur) {
+                    return false;
+                }
+                cur = cur.next;
+            }
+        }
+        return true;
+    }
 }

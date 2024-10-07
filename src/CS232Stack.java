@@ -1,4 +1,4 @@
-package hw03;
+package src;
 
 /**
  * Generic interface specifying a Stack ADT.

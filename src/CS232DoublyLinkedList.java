@@ -1,4 +1,4 @@
-package hw03;
+package src;
 
 /**
  * Doubly linked list implementation of the CS232List interface.
@@ -114,29 +114,13 @@ public class CS232DoublyLinkedList<E> implements CS232List<E> {
 	 * {@inheritDoc}
 	 */
 	public E remove(int index) throws IndexOutOfBoundsException {
-		if (index < 0 || index >= size){
-			throw new IndexOutOfBoundsException("accessed " + index + " but size is " + size);
-		}
+		checkBounds(index);
 
-		DLLNode holder = head.next;
-
-		for (int i = 0; i < index; i++){
-			holder = holder.next;
-		}
-
+		DLLNode holder = getNode(index);
 		E data = holder.element;
 
-		if (holder.prev != null){
-			holder.prev = holder.next;
-		}
-
-		if (holder.next != null){
-			holder.prev.next = holder.prev;
-		}
-
-		if (holder == tail){
-			tail = holder.prev;
-		}
+		holder.prev.next = holder.next;
+		holder.next.prev = holder.prev;
 
 		size--;
 
@@ -155,32 +139,31 @@ public class CS232DoublyLinkedList<E> implements CS232List<E> {
 	 *             if index < 0 or index >= size()
 	 */
 	public void clearTo(int index) throws IndexOutOfBoundsException {
-		if (index < 0 || index >= size){
-			throw new IndexOutOfBoundsException("accessed " + index + " but size is " + size);
-		} 
+		if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("accessed " + index + " but size is " + size);
+        }
+		
 
 
-		DLLNode holder = head;
+		DLLNode holder = head.next;
 
 		for (int i = 0; i <= index; i++){
 			DLLNode holderNext = holder.next;
 
-			holder.next = null;
 			holder.prev = null;
+			holder.next = null;
 
 			holder = holderNext;
 		}
 
+		head.next = holder;
+
 		if (holder != null) {
 			holder.prev = head;
-			head.next = holder;
 		} else {
-			head = null;
-			tail = head;
+			tail.prev = head;
 		}
-
-		size = size - (index + 1);
-
+		size -= (index + 1);
 		
 	}
 
@@ -206,14 +189,18 @@ public class CS232DoublyLinkedList<E> implements CS232List<E> {
 					throw new IndexOutOfBoundsException("accessed " + index + " but size is " + size);
 				}
 
+				if (list.size() == 0) {
+					throw new IllegalArgumentException("List is empty");
+				}
+
 				DLLNode holder = head.next;
 
-				for (int i = 0; i < index; i++){
+				for (int i = 0; i < index; i++) {
 					holder = holder.next;
 				}
 
-				DLLNode newHolder = holder.next;
 
+				DLLNode newHolder = holder;
 				DLLNode listHead = list.head.next;
 				DLLNode listTail = list.tail.prev;
 				
@@ -228,6 +215,7 @@ public class CS232DoublyLinkedList<E> implements CS232List<E> {
 					listHead.prev = indexPrev;
 				}
 
+				listTail.next = newHolder;
 				if (newHolder != null) {
 					listTail.next = newHolder;
 					newHolder.prev = listTail;

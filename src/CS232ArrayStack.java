@@ -1,6 +1,6 @@
 package src;
 
-import hw03.CS232ArrayList;
+import src.CS232ArrayList;
 
 public class CS232ArrayStack<E> implements CS232Stack<E> {
 

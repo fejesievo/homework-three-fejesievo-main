@@ -1,4 +1,4 @@
-package hw03;
+package src;
 
 import static org.junit.Assert.*;
 
